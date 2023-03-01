@@ -1,10 +1,12 @@
+import { useCallback, useEffect, useState } from "react";
+
 export interface Store {
   profiles: Profile[];
   scenarios: Scenario[];
   sessions: Session[];
 }
 
-interface Profile {
+export interface Profile {
   id: string;
   name: string;
   guildId: string;
@@ -13,28 +15,39 @@ interface Profile {
   gmUserId: string;
 }
 
-interface Scenario {
+export interface Scenario {
   id: string;
   name: string;
 }
 
-interface Session {
+export interface Session {
   id: string;
   name: string;
 }
 
-export const loadStore = () => {
-  const s = window.localStorage.getItem("store");
-  if (s) {
-    return JSON.parse(s) as Store;
-  }
-  return {
+const STORAGE_KEY = "discordweb-murdermystery/store";
+
+export const useStore = (): [Store, (store: Store) => void] => {
+  const [_store, _setStore] = useState({
     profiles: [],
     scenarios: [],
     sessions: [],
-  } as Store;
-};
+  } as Store);
 
-export const saveStore = (store: Store) => {
-  window.localStorage.setItem("store", JSON.stringify(store));
+  useEffect(() => {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) {
+      _setStore(JSON.parse(s) as Store);
+    }
+  }, [_setStore]);
+
+  const setStore = useCallback(
+    (store: Store) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+      _setStore(store);
+    },
+    [_setStore]
+  );
+
+  return [_store, setStore];
 };

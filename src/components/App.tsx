@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, ReactNode, useEffect, useState } from "react";
 import {
   AppBar,
   Box,
@@ -18,31 +18,31 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { loadStore, Store } from "@/src/store";
+import { Profile, useStore } from "@/src/store";
 
 const drawerWidth = 320;
 
-const App: FC = () => {
-  const [store, setStore] = useState<Store>(loadStore());
+const App: FC<{ children: ReactNode }> = ({ children }) => {
+  const [store, setStore] = useStore();
 
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [theme, setTheme] = useState(
     createTheme({ palette: { mode: "dark" } })
   );
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profile, setProfile] = useState("");
+  const [profile, setProfile] = useState<Profile | null>();
 
   useEffect(() => {
     if (store.profiles.length === 0) return;
 
-    if (profile === "") {
-      setProfile(store.profiles[0].id);
+    if (!profile) {
+      setProfile(store.profiles[0]);
       return;
     }
 
     const profileIds = store.profiles.map((p) => p.id);
-    if (!profileIds.includes(profile)) {
-      setProfile(store.profiles[0].id);
+    if (!profileIds.includes(profile.id)) {
+      setProfile(store.profiles[0]);
       return;
     }
   }, [store.profiles]);
@@ -61,8 +61,10 @@ const App: FC = () => {
   };
 
   const selectProfile = (event: SelectChangeEvent<string>) => {
-    setProfile(event.target.value);
-    // load profile
+    const p = store.profiles.filter((pr) => pr.id === event.target.value);
+    if (p.length === 1) {
+      setProfile(p[0]);
+    }
   };
 
   const profileMenuItems = store.profiles.map((pr) => (
@@ -73,7 +75,7 @@ const App: FC = () => {
 
   const drawer = (
     <>
-      <Toolbar sx={{ justifyContent: "flex-end" }}>
+      <Toolbar sx={{ justifyContent: "flex-end", display: { xs: "none" } }}>
         <IconButton aria-label="close drawer" onClick={toggleDrawer}>
           <Icon>close</Icon>
         </IconButton>
@@ -81,7 +83,7 @@ const App: FC = () => {
       <Divider />
       <Select
         id="select-profile"
-        value={profile}
+        value={profile?.id ?? ""}
         onChange={selectProfile}
         label="プロフィール"
         sx={{ mt: 2 }}
@@ -170,8 +172,7 @@ const App: FC = () => {
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          <Toolbar></Toolbar>
-          <Typography>hogehoge</Typography>
+          {children}
         </Box>
       </Box>
     </ThemeProvider>
