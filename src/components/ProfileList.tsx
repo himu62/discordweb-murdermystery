@@ -2,12 +2,23 @@ import { FC, useContext } from "react";
 import { Profile, StoreContext } from "@/src/store";
 import { Card } from "@mui/material";
 
+const card = {
+  m: 1,
+  p: 1,
+};
+
+const newcard = {
+  border: 2,
+  borderStyle: "dashed",
+  backgroundColor: "transparent",
+};
+
 const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
-  return <Card>{profile.id}</Card>;
+  return <Card sx={card}>{profile.id}</Card>;
 };
 
 const NewProfile: FC<{}> = ({}) => {
-  return <Card>new profile</Card>;
+  return <Card sx={{ ...card, ...newcard }}>new profile</Card>;
 };
 
 const ProfileList: FC = () => {
