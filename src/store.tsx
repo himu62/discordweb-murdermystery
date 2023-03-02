@@ -71,8 +71,6 @@ export const StoreContextProvider: FC<{ children: ReactNode }> = ({
   const _context = {
     store,
     setStore: (store: Store) => {
-      console.log("save!");
-      console.log(store);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
       setStore(store);
     },

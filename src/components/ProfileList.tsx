@@ -50,7 +50,6 @@ const NewProfile: FC = () => {
   };
 
   const onSubmit = (data: Inputs) => {
-    console.log(data);
     store.profiles.push(data);
     setStore(store);
   };
