@@ -21,9 +21,9 @@ export interface Store {
 export interface Profile {
   id: string;
   name: string;
-  guildId: string;
   token: string;
   clientId: string;
+  guildId: string;
   gmUserId: string;
 }
 
@@ -71,6 +71,8 @@ export const StoreContextProvider: FC<{ children: ReactNode }> = ({
   const _context = {
     store,
     setStore: (store: Store) => {
+      console.log("save!");
+      console.log(store);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
       setStore(store);
     },
