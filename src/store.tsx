@@ -1,21 +1,18 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useState,
-} from "react";
+import React, { createContext, FC, ReactNode, useContext, useState } from "react";
+
+const VERSION = "1";
 
 export interface Store {
+  version: string;
   darkMode: boolean;
   currentProfileId: string;
 
-  profiles: Profile[];
-  scenarios: Scenario[];
-  sessions: Session[];
+  profiles: Map<string, Profile>;
+  scenarios: Map<string, Scenario>;
+  sessions: Map<string, Session>;
 }
 
 export interface Profile {
@@ -37,19 +34,45 @@ export interface Session {
   name: string;
 }
 
+const encodeStore = (store: Store) => {
+  return JSON.stringify({
+    version: store.version,
+    darkMode: store.darkMode,
+    currentProfileId: store.currentProfileId,
+    profiles: Object.fromEntries(store.profiles),
+    scenarios: Object.fromEntries(store.scenarios),
+    sessions: Object.fromEntries(store.sessions,
+  });
+};
+
+const decodeStore = (s: string) => {
+  const { version, darkMode, currentProfileId, profiles, scenarios, sessions } =
+    JSON.parse(s);
+
+  return {
+    version,
+    darkMode,
+    currentProfileId,
+    profiles: new Map(Object.entries(profiles)),
+    scenarios: new Map(Object.entries(scenarios)),
+    sessions: new Map(Object.entries(sessions),
+  } as Store;
+};
+
 const STORAGE_KEY = "discordweb-murdermystery/store";
 
 const _s =
   typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
 const _defaultStore = _s
-  ? (JSON.parse(_s) as Store)
+  ? decodeStore(_s)
   : ({
-      darkMode: true,
-      currentProfileId: "",
-      profiles: [],
-      scenarios: [],
-      sessions: [],
-    } as Store);
+    version: VERSION,
+    darkMode: true,
+    currentProfileId: "",
+    profiles: new Map<string, Profile>(),
+    scenarios: new Map<string, Scenario>(),
+    sessions: new Map<string, Session>(,
+  } as Store);
 
 interface StoreContextType {
   store: Store;
@@ -66,14 +89,14 @@ export const StoreContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const context = useContext(StoreContext);
-  const [store, setStore] = useState(context.store);
+  const [store, _setStore] = useState(context.store);
 
   const _context = {
     store,
-    setStore: (store: Store) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-      setStore(store);
-    },
+    setStore: (_store: Store) => {
+      localStorage.setItem(STORAGE_KEY, encodeStore(_store));
+      _setStore(_store);
+    }
   };
 
   return (

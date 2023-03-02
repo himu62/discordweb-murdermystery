@@ -37,9 +37,11 @@ interface Props {
 }
 
 const App: FC<Props> = ({ children }) => {
-  const { store } = useContext(StoreContext);
+  const {
+    store: { darkMode, profiles },
+  } = useContext(StoreContext);
 
-  const [isDarkMode, setIsDarkMode] = useState(store.darkMode);
+  const [isDarkMode, setIsDarkMode] = useState(darkMode);
   const [theme, setTheme] = useState(
     createTheme({ palette: { mode: isDarkMode ? "dark" : "light" } })
   );
@@ -47,19 +49,18 @@ const App: FC<Props> = ({ children }) => {
   const [profile, setProfile] = useState<Profile | null>();
 
   useEffect(() => {
-    if (store.profiles.length === 0) return;
+    if (profiles.size === 0) return;
 
     if (!profile) {
-      setProfile(store.profiles[0]);
+      setProfile(profiles.entries().next().value);
       return;
     }
 
-    const profileIds = store.profiles.map((p) => p.id);
-    if (!profileIds.includes(profile.id)) {
-      setProfile(store.profiles[0]);
+    if (!profiles.has(profile.id)) {
+      setProfile(profiles.entries().next().value);
       return;
     }
-  }, [profile, store.profiles]);
+  }, [profile, profiles]);
 
   const toggleDarkMode = (ev: ChangeEvent<HTMLInputElement>) => {
     setIsDarkMode(ev.target.checked);
@@ -75,13 +76,13 @@ const App: FC<Props> = ({ children }) => {
   };
 
   const selectProfile = (event: SelectChangeEvent) => {
-    const p = store.profiles.filter((pr) => pr.id === event.target.value);
-    if (p.length === 1) {
-      setProfile(p[0]);
+    const p = profiles.get(event.target.value);
+    if (p) {
+      setProfile(p);
     }
   };
 
-  const profileMenuItems = store.profiles.map((pr) => (
+  const profileMenuItems = Array.from(profiles.values()).map((pr) => (
     <MenuItem key={pr.id} value={pr.id}>
       {pr.name}
     </MenuItem>
@@ -107,7 +108,7 @@ const App: FC<Props> = ({ children }) => {
             {profileMenuItems}
           </Select>
         </FormControl>
-        <Button href="/profiles">
+        <Button href="/profiles" variant="outlined">
           <Icon>edit</Icon>追加・編集
         </Button>
       </Box>
