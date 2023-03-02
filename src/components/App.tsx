@@ -9,17 +9,20 @@ import {
 import {
   AppBar,
   Box,
+  Button,
   createTheme,
   CssBaseline,
   Divider,
   Drawer,
+  FormControl,
   Icon,
   IconButton,
-  Link,
+  InputLabel,
   List,
   MenuItem,
   Select,
   SelectChangeEvent,
+  Stack,
   Switch,
   ThemeProvider,
   Toolbar,
@@ -85,28 +88,32 @@ const App: FC<Props> = ({ children }) => {
   ));
 
   const drawer = (
-    <>
+    <Stack>
       <Toolbar sx={{ justifyContent: "flex-end", display: { xs: "none" } }}>
         <IconButton aria-label="close drawer" onClick={toggleDrawer}>
           <Icon>close</Icon>
         </IconButton>
       </Toolbar>
       <Divider />
-      <Select
-        id="select-profile"
-        value={profile?.id ?? ""}
-        onChange={selectProfile}
-        label="プロフィール"
-        sx={{ mt: 2 }}
-      >
-        {profileMenuItems}
-      </Select>
-      <Link href="/profiles">
-        <Icon>edit</Icon>追加・編集
-      </Link>
+      <Box sx={{ p: 1 }}>
+        <FormControl margin="dense" size="small" fullWidth>
+          <InputLabel htmlFor="select-profile">プロフィール</InputLabel>
+          <Select
+            id="select-profile"
+            value={profile?.id ?? ""}
+            onChange={selectProfile}
+            label="プロフィール"
+          >
+            {profileMenuItems}
+          </Select>
+        </FormControl>
+        <Button href="/profiles">
+          <Icon>edit</Icon>追加・編集
+        </Button>
+      </Box>
       <Divider />
       <List></List>
-    </>
+    </Stack>
   );
 
   return (
