@@ -6,6 +6,7 @@ import React, {
   FC,
   ReactNode,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
@@ -67,18 +68,14 @@ const decodeStore = (s: string) => {
 
 const STORAGE_KEY = "discordweb-murdermystery/store";
 
-const _s =
-  typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-const _defaultStore = _s
-  ? decodeStore(_s)
-  : ({
-      version: VERSION,
-      darkMode: true,
-      currentProfileId: "",
-      profiles: new Map<string, Profile>(),
-      scenarios: new Map<string, Scenario>(),
-      sessions: new Map<string, Session>(),
-    } as Store);
+const emptyStore = {
+  version: VERSION,
+  darkMode: true,
+  currentProfileId: "",
+  profiles: new Map(),
+  scenarios: new Map(),
+  sessions: new Map(),
+} as Store;
 
 interface StoreContextType {
   store: Store;
@@ -86,24 +83,33 @@ interface StoreContextType {
 }
 
 export const StoreContext = createContext<StoreContextType>({
-  store: _defaultStore,
+  store: emptyStore,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setStore: (store: Store) => {},
 });
 
-export const StoreContextProvider: FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const StoreContextProvider: FC<{
+  children: ReactNode | ReactNode[];
+}> = ({ children }) => {
   const context = useContext(StoreContext);
   const [store, _setStore] = useState(context.store);
 
   const _context = {
     store,
     setStore: (_store: Store) => {
+      console.log(_store);
       localStorage.setItem(STORAGE_KEY, encodeStore(_store));
       _setStore(_store);
     },
   };
+
+  useEffect(() => {
+    const _s =
+      typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+    if (_s) {
+      _setStore(decodeStore(_s));
+    }
+  }, []);
 
   return (
     <StoreContext.Provider value={_context}>{children}</StoreContext.Provider>
