@@ -1,7 +1,13 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { createContext, FC, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useState,
+} from "react";
 
 const VERSION = "1";
 
@@ -41,7 +47,7 @@ const encodeStore = (store: Store) => {
     currentProfileId: store.currentProfileId,
     profiles: Object.fromEntries(store.profiles),
     scenarios: Object.fromEntries(store.scenarios),
-    sessions: Object.fromEntries(store.sessions,
+    sessions: Object.fromEntries(store.sessions),
   });
 };
 
@@ -55,7 +61,7 @@ const decodeStore = (s: string) => {
     currentProfileId,
     profiles: new Map(Object.entries(profiles)),
     scenarios: new Map(Object.entries(scenarios)),
-    sessions: new Map(Object.entries(sessions))
+    sessions: new Map(Object.entries(sessions)),
   } as Store;
 };
 
@@ -66,13 +72,13 @@ const _s =
 const _defaultStore = _s
   ? decodeStore(_s)
   : ({
-    version: VERSION,
-    darkMode: true,
-    currentProfileId: "",
-    profiles: new Map<string, Profile>(),
-    scenarios: new Map<string, Scenario>(),
-    sessions: new Map<string, Session>()
-  } as Store);
+      version: VERSION,
+      darkMode: true,
+      currentProfileId: "",
+      profiles: new Map<string, Profile>(),
+      scenarios: new Map<string, Scenario>(),
+      sessions: new Map<string, Session>(),
+    } as Store);
 
 interface StoreContextType {
   store: Store;
@@ -96,7 +102,7 @@ export const StoreContextProvider: FC<{ children: ReactNode }> = ({
     setStore: (_store: Store) => {
       localStorage.setItem(STORAGE_KEY, encodeStore(_store));
       _setStore(_store);
-    }
+    },
   };
 
   return (
