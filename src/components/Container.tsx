@@ -47,7 +47,7 @@ const Container: FC<{ children: ReactNode | ReactNode[] }> = ({ children }) => {
     setIsDarkMode(store.darkMode);
     const mode = store.darkMode ? "dark" : "light";
     setTheme(createTheme({ palette: { mode: mode } }));
-  }, [store.currentProfileId]);
+  }, [store.currentProfileId, store.darkMode]);
 
   const toggleDarkMode = (ev: ChangeEvent<HTMLInputElement>) => {
     setIsDarkMode(ev.target.checked);
