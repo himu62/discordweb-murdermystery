@@ -1,6 +1,16 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { Profile, StoreContext } from "@/src/store";
-import { Button, ButtonGroup, Card, CardActionArea, CardActions, CardContent, Icon, Modal, Stack } from "@mui/material";
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  Icon,
+  Modal,
+  Stack,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import TextField from "@/src/atom/TextField";
 import { v4 } from "uuid";
@@ -70,7 +80,7 @@ const ProfileItem: FC<{
             inputProps={{
               required: true,
               pattern: "[1-9]\\d*",
-              ...register("clientId",
+              ...register("clientId"),
             }}
             helperText="クライアントIDは数字だけです"
           />
@@ -83,7 +93,7 @@ const ProfileItem: FC<{
             inputProps={{
               required: true,
               pattern: "[1-9]\\d*",
-              ...register("guildId")
+              ...register("guildId"),
             }}
             helperText="サーバIDは数字だけです"
           />
@@ -96,7 +106,7 @@ const ProfileItem: FC<{
             inputProps={{
               required: true,
               pattern: "[1-9]\\d*",
-              ...register("gmUserId")
+              ...register("gmUserId"),
             }}
             helperText="ユーザIDは数字だけです"
           />
@@ -165,7 +175,7 @@ const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
               inputProps={{
                 required: true,
                 pattern: "[0-9a-zA-Z-.]+",
-                ...register("token")
+                ...register("token"),
               }}
               helperText="トークンが間違っています"
             />
@@ -177,7 +187,7 @@ const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
               inputProps={{
                 required: true,
                 pattern: "[1-9]\\d*",
-                ...register("clientId")
+                ...register("clientId"),
               }}
               helperText="クライアントIDは数字だけです"
             />
@@ -189,7 +199,7 @@ const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
               inputProps={{
                 required: true,
                 pattern: "[1-9]\\d*",
-                ...register("guildId")
+                ...register("guildId"),
               }}
               helperText="サーバIDは数字だけです"
             />
@@ -201,7 +211,7 @@ const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
               inputProps={{
                 required: true,
                 pattern: "[1-9]\\d*",
-                ...register("gmUserId")
+                ...register("gmUserId"),
               }}
               helperText="ユーザIDは数字だけです"
             />
@@ -252,7 +262,7 @@ const ProfileList: FC = () => {
     setStore(store);
     setProfiles(Array.from(store.profiles.values()));
     snack(`プロフィール「${data.name}」を追加しました。`, {
-      variant: "success"
+      variant: "success",
     });
   };
 
@@ -285,7 +295,7 @@ const ProfileList: FC = () => {
           >
             取り消し
           </Button>
-        )
+        ),
       });
     }
   };
