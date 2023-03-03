@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { Profile, StoreContext } from "@/src/store";
 import {
   Button,
@@ -14,7 +14,7 @@ import {
 import { useForm } from "react-hook-form";
 import TextField from "@/src/atom/TextField";
 import { v4 } from "uuid";
-import { OptionsObject, SnackbarProvider } from "notistack";
+import { useSnackbar } from "notistack";
 
 const card = {
   m: 1,
@@ -242,26 +242,20 @@ const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
 };
 
 const ProfileList: FC = () => {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { store, setStore } = useContext(StoreContext);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const providerRef = useRef<SnackbarProvider>(null);
 
   useEffect(() => {
     setProfiles(Array.from(store.profiles.values()));
   }, [store.profiles]);
-
-  const snack = (message: string, options?: OptionsObject) => {
-    if (providerRef.current) {
-      providerRef.current.enqueueSnackbar(message, options);
-    }
-  };
 
   const onCreate = (data: Inputs) => {
     data.id = v4();
     store.profiles.set(data.id, data);
     setStore(store);
     setProfiles(Array.from(store.profiles.values()));
-    snack(`プロフィール「${data.name}」を追加しました。`, {
+    enqueueSnackbar(`プロフィール「${data.name}」を追加しました。`, {
       variant: "success",
     });
   };
@@ -270,7 +264,7 @@ const ProfileList: FC = () => {
     store.profiles.set(profile.id, profile);
     setStore(store);
     setProfiles(Array.from(store.profiles.values()));
-    snack("プロフィールを保存しました。");
+    enqueueSnackbar("プロフィールを保存しました。");
   };
 
   const onDelete = (id: string) => {
@@ -280,7 +274,7 @@ const ProfileList: FC = () => {
       setStore(store);
       setProfiles(Array.from(store.profiles.values()));
       const snackKey = v4();
-      snack(`プロフィール「${deleted.name}」を削除しました。`, {
+      enqueueSnackbar(`プロフィール「${deleted.name}」を削除しました。`, {
         variant: "error",
         autoHideDuration: 10000,
         key: snackKey,
@@ -290,7 +284,7 @@ const ProfileList: FC = () => {
               store.profiles.set(deleted.id, deleted);
               setStore(store);
               setProfiles(Array.from(store.profiles.values()));
-              providerRef.current?.closeSnackbar(snackKey);
+              closeSnackbar(snackKey);
             }}
           >
             取り消し
@@ -301,19 +295,17 @@ const ProfileList: FC = () => {
   };
 
   return (
-    <SnackbarProvider ref={providerRef} hideIconVariant>
-      <Stack sx={{ mt: 2 }}>
-        {profiles.map((pr) => (
-          <ProfileItem
-            key={pr.id}
-            profile={pr}
-            onSave={onSave}
-            onDelete={onDelete}
-          />
-        ))}
-        <NewProfile onCreate={onCreate} />
-      </Stack>
-    </SnackbarProvider>
+    <Stack sx={{ mt: 2 }}>
+      {profiles.map((pr) => (
+        <ProfileItem
+          key={pr.id}
+          profile={pr}
+          onSave={onSave}
+          onDelete={onDelete}
+        />
+      ))}
+      <NewProfile onCreate={onCreate} />
+    </Stack>
   );
 };
 export default ProfileList;
