@@ -1,9 +1,10 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import { Profile, StoreContext } from "@/src/store";
 import { Button, ButtonGroup, Card, CardActionArea, CardActions, CardContent, Icon, Modal, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 import TextField from "@/src/atom/TextField";
 import { v4 } from "uuid";
+import { OptionsObject, SnackbarProvider } from "notistack";
 
 const card = {
   m: 1,
@@ -19,13 +20,19 @@ const newcard = {
 
 type Inputs = Profile;
 
-const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
+const ProfileItem: FC<{
+  profile: Profile;
+  onSave: (profile: Profile) => void;
+  onDelete: (id: string) => void;
+}> = ({ profile, onSave, onDelete }) => {
   const { register, handleSubmit, reset } = useForm<Inputs>({
-    defaultValues: profil,
+    defaultValues: profile,
   });
+  const [defaultValues, setDefaultValues] = useState(profile);
 
   const onSubmit = (data: Inputs) => {
-    profile = data;
+    onSave(data);
+    setDefaultValues(data);
   };
 
   return (
@@ -44,12 +51,13 @@ const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
             name="token"
             label="トークン"
             required
+            type="password"
             margin="dense"
             size="small"
             inputProps={{
               required: true,
               pattern: "[0-9a-zA-Z-.]+",
-              ...register("token",
+              ...register("token"),
             }}
             helperText="トークンが間違っています"
           />
@@ -75,7 +83,7 @@ const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
             inputProps={{
               required: true,
               pattern: "[1-9]\\d*",
-              ...register("guildId",
+              ...register("guildId")
             }}
             helperText="サーバIDは数字だけです"
           />
@@ -88,7 +96,7 @@ const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
             inputProps={{
               required: true,
               pattern: "[1-9]\\d*",
-              ...register("gmUserId",
+              ...register("gmUserId")
             }}
             helperText="ユーザIDは数字だけです"
           />
@@ -98,10 +106,14 @@ const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
             <Button type="submit">
               <Icon>save</Icon>保存
             </Button>
-            <Button type="button" onClick={() => reset()}>
+            <Button type="button" onClick={() => reset(defaultValues)}>
               <Icon>refresh</Icon>リセット
             </Button>
-            <Button type="button" color="error">
+            <Button
+              type="button"
+              color="error"
+              onClick={() => onDelete(profile.id)}
+            >
               <Icon>delete</Icon>削除
             </Button>
           </ButtonGroup>
@@ -111,9 +123,7 @@ const ProfileItem: FC<{ profile: Profile }> = ({ profile }) => {
   );
 };
 
-const NewProfile: FC = () => {
-  const { store, setStore } = useContext(StoreContext);
-
+const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit } = useForm<Inputs>();
@@ -123,9 +133,8 @@ const NewProfile: FC = () => {
   };
 
   const onSubmit = (data: Inputs) => {
-    data.id = v4();
-    store.profiles.set(data.id, data);
-    setStore(store);
+    onCreate(data);
+    setOpen(false);
   };
 
   const modal = (
@@ -151,6 +160,7 @@ const NewProfile: FC = () => {
               name="token"
               label="トークン"
               required
+              type="password"
               margin="dense"
               inputProps={{
                 required: true,
@@ -222,21 +232,78 @@ const NewProfile: FC = () => {
 };
 
 const ProfileList: FC = () => {
-  const { store } = useContext(StoreContext);
-
+  const { store, setStore } = useContext(StoreContext);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const providerRef = useRef<SnackbarProvider>(null);
 
   useEffect(() => {
     setProfiles(Array.from(store.profiles.values()));
   }, [store.profiles]);
 
+  const snack = (message: string, options?: OptionsObject) => {
+    if (providerRef.current) {
+      providerRef.current.enqueueSnackbar(message, options);
+    }
+  };
+
+  const onCreate = (data: Inputs) => {
+    data.id = v4();
+    store.profiles.set(data.id, data);
+    setStore(store);
+    setProfiles(Array.from(store.profiles.values()));
+    snack(`プロフィール「${data.name}」を追加しました。`, {
+      variant: "success"
+    });
+  };
+
+  const onSave = (profile: Profile) => {
+    store.profiles.set(profile.id, profile);
+    setStore(store);
+    setProfiles(Array.from(store.profiles.values()));
+    snack("プロフィールを保存しました。");
+  };
+
+  const onDelete = (id: string) => {
+    const deleted = store.profiles.get(id);
+    if (deleted) {
+      store.profiles.delete(id);
+      setStore(store);
+      setProfiles(Array.from(store.profiles.values()));
+      const snackKey = v4();
+      snack(`プロフィール「${deleted.name}」を削除しました。`, {
+        variant: "error",
+        autoHideDuration: 10000,
+        key: snackKey,
+        action: (
+          <Button
+            onClick={() => {
+              store.profiles.set(deleted.id, deleted);
+              setStore(store);
+              setProfiles(Array.from(store.profiles.values()));
+              providerRef.current?.closeSnackbar(snackKey);
+            }}
+          >
+            取り消し
+          </Button>
+        )
+      });
+    }
+  };
+
   return (
-    <Stack sx={{ mt: 2 }}>
-      {profiles.map((pr) => (
-        <ProfileItem key={pr.id} profile={pr} />
-      ))}
-      <NewProfile />
-    </Stack>
+    <SnackbarProvider ref={providerRef} hideIconVariant>
+      <Stack sx={{ mt: 2 }}>
+        {profiles.map((pr) => (
+          <ProfileItem
+            key={pr.id}
+            profile={pr}
+            onSave={onSave}
+            onDelete={onDelete}
+          />
+        ))}
+        <NewProfile onCreate={onCreate} />
+      </Stack>
+    </SnackbarProvider>
   );
 };
 export default ProfileList;

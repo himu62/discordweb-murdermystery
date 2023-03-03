@@ -55,7 +55,7 @@ const decodeStore = (s: string) => {
     currentProfileId,
     profiles: new Map(Object.entries(profiles)),
     scenarios: new Map(Object.entries(scenarios)),
-    sessions: new Map(Object.entries(sessions),
+    sessions: new Map(Object.entries(sessions))
   } as Store;
 };
 
@@ -71,7 +71,7 @@ const _defaultStore = _s
     currentProfileId: "",
     profiles: new Map<string, Profile>(),
     scenarios: new Map<string, Scenario>(),
-    sessions: new Map<string, Session>(,
+    sessions: new Map<string, Session>()
   } as Store);
 
 interface StoreContextType {
