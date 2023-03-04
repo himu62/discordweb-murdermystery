@@ -97,7 +97,6 @@ export const StoreContextProvider: FC<{
   const _context = {
     store,
     setStore: (_store: Store) => {
-      console.log(_store);
       localStorage.setItem(STORAGE_KEY, encodeStore(_store));
       _setStore(_store);
     },
