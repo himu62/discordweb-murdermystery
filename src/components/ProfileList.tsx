@@ -1,5 +1,5 @@
-import { FC, useContext, useEffect, useState } from "react";
-import { Profile, StoreContext } from "@/src/store";
+import { FC, useEffect, useState } from "react";
+import { Profile, useStore } from "@/src/store";
 import {
   Button,
   ButtonGroup,
@@ -243,7 +243,7 @@ const NewProfile: FC<{ onCreate: (data: Inputs) => void }> = ({ onCreate }) => {
 
 const ProfileList: FC = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { store, setStore } = useContext(StoreContext);
+  const { store, setStore } = useStore();
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
   useEffect(() => {

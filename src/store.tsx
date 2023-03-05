@@ -77,21 +77,30 @@ const emptyStore = {
   sessions: new Map(),
 } as Store;
 
-interface StoreContextType {
+const loadStore = () => {
+  const _s =
+    typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+  if (_s) {
+    return decodeStore(_s);
+  }
+  return emptyStore;
+};
+
+interface StoreContext {
   store: Store;
   setStore: (store: Store) => void;
 }
 
-export const StoreContext = createContext<StoreContextType>({
-  store: emptyStore,
+const _StoreContext = createContext<StoreContext>({
+  store: loadStore(),
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setStore: (store: Store) => {},
 });
 
-export const StoreContextProvider: FC<{
+export const StoreProvider: FC<{
   children: ReactNode | ReactNode[];
 }> = ({ children }) => {
-  const context = useContext(StoreContext);
+  const context = useContext(_StoreContext);
   const [store, _setStore] = useState(context.store);
 
   const _context = {
@@ -106,11 +115,16 @@ export const StoreContextProvider: FC<{
     const _s =
       typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (_s) {
-      _setStore(decodeStore(_s));
+      const s = decodeStore(_s);
+      _setStore(s);
     }
   }, []);
 
   return (
-    <StoreContext.Provider value={_context}>{children}</StoreContext.Provider>
+    <_StoreContext.Provider value={_context}>{children}</_StoreContext.Provider>
   );
+};
+
+export const useStore = () => {
+  return useContext(_StoreContext);
 };
