@@ -5,6 +5,9 @@ import {
   Drawer as MuiDrawer,
   Icon,
   IconButton,
+  Link,
+  MenuItem,
+  MenuList,
   Stack,
   Toolbar,
 } from "@mui/material";
@@ -28,6 +31,14 @@ const Drawer: FC<{ width: number }> = ({ width }) => {
       <Divider />
 
       <ProfileSelector />
+
+      <Divider />
+
+      <MenuList>
+        <Link href="/scenarios" underline="none">
+          <MenuItem>シナリオ一覧</MenuItem>
+        </Link>
+      </MenuList>
 
       <Divider />
     </Stack>
