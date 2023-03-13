@@ -9,16 +9,21 @@ export type Inputs = {
 };
 
 type Props = {
-  onSubmit: (data: Inputs) => void;
+  onCreate: (data: Inputs) => void;
 };
 
-const NewScenarioButton: FC<Props> = ({ onSubmit }) => {
+const NewScenarioButton: FC<Props> = ({ onCreate }) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit } = useForm<Inputs>();
 
   const toggleModal = () => {
     setOpen(!open);
+  };
+
+  const onSubmit = (data: Inputs) => {
+    onCreate(data);
+    setOpen(false);
   };
 
   return (

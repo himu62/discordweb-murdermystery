@@ -1,6 +1,7 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import {
   Box,
+  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -16,9 +17,11 @@ import NewScenarioButton, {
 } from "@/src/components/ScenarioList/NewScenarioButton";
 import { v4 } from "uuid";
 import ScenarioItem from "@/src/components/ScenarioList/ScenarioItem";
+import { useSnackbar } from "notistack";
 
 const ScenarioList: FC = () => {
   const { store, setStore } = useStore();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
 
   const [filterName, setFilterName] = useState("");
@@ -70,6 +73,9 @@ const ScenarioList: FC = () => {
     store.scenarios.set(n.id, n);
     setStore(store);
     setScenarios(Array.from(store.scenarios.values()));
+    enqueueSnackbar(`シナリオ「${data.name}」を追加しました。`, {
+      variant: "success",
+    });
   };
 
   const handleNameChanged = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -80,10 +86,38 @@ const ScenarioList: FC = () => {
     setFilterCounts(ev.target.value as number[]);
   };
 
+  const handleDelete = (id: string) => {
+    const deleted = store.scenarios.get(id);
+    if (deleted) {
+      store.scenarios.delete(id);
+      setStore(store);
+      setScenarios(Array.from(store.scenarios.values()));
+
+      const snackKey = v4();
+      enqueueSnackbar(`シナリオ「${deleted.name}」を削除しました。`, {
+        variant: "error",
+        autoHideDuration: 10000,
+        key: snackKey,
+        action: (
+          <Button
+            onClick={() => {
+              store.scenarios.set(deleted.id, deleted);
+              setStore(store);
+              setScenarios(Array.from(store.scenarios.values()));
+              closeSnackbar(snackKey);
+            }}
+          >
+            取り消し
+          </Button>
+        ),
+      });
+    }
+  };
+
   return (
     <Box sx={{ mt: 2 }}>
       <Box sx={{ m: 1 }}>
-        <NewScenarioButton onSubmit={handleSubmitNew} />
+        <NewScenarioButton onCreate={handleSubmitNew} />
       </Box>
       <Box
         sx={{
@@ -132,6 +166,7 @@ const ScenarioList: FC = () => {
               id={s.id}
               name={s.name}
               playersCount={s.playersCount}
+              onDelete={handleDelete}
             />
           );
         })}
