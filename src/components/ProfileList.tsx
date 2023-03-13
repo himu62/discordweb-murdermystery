@@ -113,18 +113,23 @@ const ProfileItem: FC<{
         </CardContent>
         <CardActions>
           <ButtonGroup variant="contained">
-            <Button type="submit">
-              <Icon>save</Icon>保存
-            </Button>
-            <Button type="button" onClick={() => reset(defaultValues)}>
-              <Icon>refresh</Icon>リセット
+            <Button type="submit" startIcon={<Icon>save</Icon>}>
+              保存
             </Button>
             <Button
               type="button"
+              startIcon={<Icon>refresh</Icon>}
+              onClick={() => reset(defaultValues)}
+            >
+              リセット
+            </Button>
+            <Button
+              type="button"
+              startIcon={<Icon>delete</Icon>}
               color="error"
               onClick={() => onDelete(profile.id)}
             >
-              <Icon>delete</Icon>削除
+              削除
             </Button>
           </ButtonGroup>
         </CardActions>

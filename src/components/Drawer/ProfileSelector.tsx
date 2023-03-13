@@ -45,8 +45,8 @@ const ProfileSelector: FC = () => {
           {menuItems}
         </Select>
       </FormControl>
-      <Button href="/profiles" variant="outlined">
-        <Icon>edit</Icon>追加・編集
+      <Button href="/profiles" variant="outlined" startIcon={<Icon>edit</Icon>}>
+        追加・編集
       </Button>
     </Box>
   );
