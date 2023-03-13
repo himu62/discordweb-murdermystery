@@ -35,6 +35,7 @@ export interface Profile {
 export interface Scenario {
   id: string;
   name: string;
+  playersCount: number;
 }
 
 export interface Session {
