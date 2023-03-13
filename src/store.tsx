@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { getCookie, setCookie } from "typescript-cookie";
 
 const VERSION = "1";
 
@@ -41,49 +42,61 @@ export interface Session {
   name: string;
 }
 
-const encodeStore = (store: Store) => {
-  return JSON.stringify({
+const STORAGE_KEY = "discordweb-murdermystery/store";
+
+const saveStore = (store: Store) => {
+  const masked = new Map<string, Profile>();
+  store.profiles.forEach((pr) => {
+    setCookie(`token/${pr.id}`, pr.token, {
+      expires: 365,
+      sameSite: "strict",
+      secure: true,
+    });
+    pr.token = "";
+    masked.set(pr.id, pr);
+  });
+
+  const j = JSON.stringify({
     version: store.version,
     darkMode: store.darkMode,
     currentProfileId: store.currentProfileId,
-    profiles: Object.fromEntries(store.profiles),
+    profiles: Object.fromEntries(masked),
     scenarios: Object.fromEntries(store.scenarios),
     sessions: Object.fromEntries(store.sessions),
   });
+  localStorage.setItem(STORAGE_KEY, j);
 };
 
-const decodeStore = (s: string) => {
+const loadStore = () => {
+  const j =
+    typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+  if (!j) {
+    return {
+      version: VERSION,
+      darkMode: true,
+      currentProfileId: "",
+      profiles: new Map(),
+      scenarios: new Map(),
+      sessions: new Map(),
+    } as Store;
+  }
+
   const { version, darkMode, currentProfileId, profiles, scenarios, sessions } =
-    JSON.parse(s);
+    JSON.parse(j);
+
+  const unmasked = new Map<string, Profile>();
+  Object.values<Profile>(profiles).forEach((pr) => {
+    unmasked.set(pr.id, { ...pr, token: getCookie(`token/${pr.id}`) ?? "" });
+  });
 
   return {
     version,
     darkMode,
     currentProfileId,
-    profiles: new Map(Object.entries(profiles)),
+    profiles: unmasked,
     scenarios: new Map(Object.entries(scenarios)),
     sessions: new Map(Object.entries(sessions)),
   } as Store;
-};
-
-const STORAGE_KEY = "discordweb-murdermystery/store";
-
-const emptyStore = {
-  version: VERSION,
-  darkMode: true,
-  currentProfileId: "",
-  profiles: new Map(),
-  scenarios: new Map(),
-  sessions: new Map(),
-} as Store;
-
-const loadStore = () => {
-  const _s =
-    typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-  if (_s) {
-    return decodeStore(_s);
-  }
-  return emptyStore;
 };
 
 interface StoreContext {
@@ -106,18 +119,13 @@ export const StoreProvider: FC<{
   const _context = {
     store,
     setStore: (_store: Store) => {
-      localStorage.setItem(STORAGE_KEY, encodeStore(_store));
+      saveStore(_store);
       _setStore(_store);
     },
   };
 
   useEffect(() => {
-    const _s =
-      typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    if (_s) {
-      const s = decodeStore(_s);
-      _setStore(s);
-    }
+    _setStore(loadStore());
   }, []);
 
   return (
