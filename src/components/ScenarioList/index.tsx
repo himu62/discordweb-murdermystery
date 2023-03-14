@@ -73,6 +73,7 @@ const ScenarioList: FC = () => {
       textChannels: [],
       voiceChannels: [],
       audienceRole: new Map(),
+      scenes: [],
     };
     store.scenarios.set(n.id, n);
     setStore(store);

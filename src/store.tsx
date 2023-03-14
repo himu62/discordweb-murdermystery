@@ -44,11 +44,38 @@ export interface Scenario {
     name: string;
   }[];
   audienceRole: Map<string, string>; // profile.id, role.id
+  scenes: {
+    name: string;
+  }[];
 }
 
 export interface Session {
   id: string;
+  scenarioId: string;
   name: string;
+  audience: boolean;
+  pcs: Map<string, string>;
+  roles: Map<
+    string,
+    {
+      id: string;
+      name: string;
+    }
+  >;
+  textChannels: Map<
+    string,
+    {
+      id: string;
+      name: string;
+    }
+  >;
+  voiceChannels: Map<
+    string,
+    {
+      id: string;
+      name: string;
+    }
+  >;
 }
 
 const STORAGE_KEY = "discordweb-murdermystery/store";
