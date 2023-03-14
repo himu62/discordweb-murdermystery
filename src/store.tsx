@@ -59,7 +59,7 @@ export interface Operation {
   sendOperation?: {
     destination: string;
     text: string;
-    filepath: string;
+    fileKeys: string[];
   };
   permissionOperation?: {
     channel: string;

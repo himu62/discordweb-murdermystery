@@ -96,7 +96,7 @@ const OperationEditor: FC<Props> = ({
           </Box>
 
           {operations[index]?.type === "send" && (
-            <Box sx={{ m: 1, mb: 0 }}>
+            <Box sx={{ mx: 1, mt: 2, mb: 0 }}>
               <FormControl size="small" fullWidth sx={{ mb: 2 }}>
                 <InputLabel
                   htmlFor={`select-operation-send-${sceneIndex}-${index}`}
@@ -107,6 +107,7 @@ const OperationEditor: FC<Props> = ({
                   id={`select-operation-send-${sceneIndex}-${index}`}
                   label="送信先のチャンネル"
                   fullWidth
+                  value={""}
                 >
                   {textChannels.map((c) => (
                     <MenuItem key={c.id} value={c.id}>
@@ -126,7 +127,19 @@ const OperationEditor: FC<Props> = ({
                 sx={{ mb: 2 }}
               />
 
-              {/* ファイルアップロードのUI */}
+              {/* セキュリティの観点からファイルのパスは取得できない。BlobデータをそのままLocalStorageに取り込むか？5MBまでなら、、 */}
+              {/* ファイル一覧のUI 削除もできるとよし */}
+              <Button component="label">
+                ファイルを追加する
+                <input
+                  type="file"
+                  hidden
+                  onChange={(e) => {
+                    console.log(e);
+                    console.log(e.target.value);
+                  }}
+                />
+              </Button>
             </Box>
           )}
 
