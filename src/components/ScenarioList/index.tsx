@@ -41,7 +41,8 @@ const ScenarioList: FC = () => {
       setScenarios(
         Array.from(store.scenarios.values()).filter((s) => {
           return (
-            s.name.includes(filterName) && filterCounts.includes(s.pcs.length)
+            s.name.toUpperCase().includes(filterName.toUpperCase()) &&
+            filterCounts.includes(s.pcs.length)
           );
         })
       );
@@ -50,7 +51,7 @@ const ScenarioList: FC = () => {
     if (filterName !== "") {
       setScenarios(
         Array.from(store.scenarios.values()).filter((s) => {
-          return s.name.includes(filterName);
+          return s.name.toUpperCase().includes(filterName.toUpperCase());
         })
       );
     }
@@ -135,13 +136,21 @@ const ScenarioList: FC = () => {
           alignItems: "center",
         }}
       >
-        <Typography component="span">フィルター</Typography>
-        <TextField label="名前の一部" onChange={handleNameChanged} />
+        <Typography>フィルター</Typography>
+        <TextField
+          label="名前の一部"
+          size="small"
+          onChange={handleNameChanged}
+          sx={{ mx: 1 }}
+        />
         <FormControl>
-          <InputLabel htmlFor="scenario-list-filter-count">人数</InputLabel>
+          <InputLabel size="small" htmlFor="scenario-list-filter-count">
+            人数
+          </InputLabel>
           <Select
             id="scenario-list-filter-count"
             label="人数"
+            size="small"
             multiple
             value={filterCounts}
             sx={{ minWidth: "8em" }}
