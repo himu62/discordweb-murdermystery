@@ -14,6 +14,7 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
+import { v4 } from "uuid";
 
 type Props = {
   control: Control<Scenario>;
@@ -26,7 +27,7 @@ const PcEditor: FC<Props> = ({ control, register, setRenamable, onSave }) => {
   const { fields, append, remove } = useFieldArray({ control, name: "pcs" });
 
   const onAppend = () => {
-    append({ name: "" });
+    append({ id: v4(), name: "" });
     onSave();
   };
 
@@ -38,7 +39,7 @@ const PcEditor: FC<Props> = ({ control, register, setRenamable, onSave }) => {
   return (
     <Box>
       {fields.map((pc, index) => (
-        <Box key={index} sx={{ mt: 2, display: "flex" }}>
+        <Box key={pc.id} sx={{ mt: 2, display: "flex" }}>
           <TextField
             label="キャラクター名"
             size="small"

@@ -12,6 +12,25 @@ const ScenarioDetailContainer: FC = () => {
   const [scenario, setScenario] = useState<Scenario>();
 
   const onSave = (data: Scenario) => {
+    data.scenes.forEach((s, i) =>
+      data.scenes[i].operations.forEach((o, j) => {
+        switch (data.scenes[i].operations[j].type) {
+          case "send":
+            data.scenes[i].operations[j].permissionOperation = undefined;
+            break;
+
+          case "permission":
+            data.scenes[i].operations[j].sendOperation = undefined;
+            break;
+
+          case "playersToAudience":
+            data.scenes[i].operations[j].sendOperation = undefined;
+            data.scenes[i].operations[j].permissionOperation = undefined;
+            break;
+        }
+      })
+    );
+
     setScenario(data);
     store.scenarios.set(data.id, data);
     setStore(store);

@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import { Box, Button, Icon, TextField } from "@mui/material";
+import { v4 } from "uuid";
 
 type Props = {
   type: "text" | "voice";
@@ -20,7 +21,7 @@ const ChannelEditor: FC<Props> = ({ type, control, register, onSave }) => {
   });
 
   const onAppend = () => {
-    append({ name: "" });
+    append({ id: v4(), name: "" });
     onSave();
   };
 
@@ -32,7 +33,7 @@ const ChannelEditor: FC<Props> = ({ type, control, register, onSave }) => {
   return (
     <Box>
       {fields.map((c, index) => (
-        <Box key={index} sx={{ mt: 2, display: "flex" }}>
+        <Box key={c.id} sx={{ mt: 2, display: "flex" }}>
           <TextField
             label={`${word}チャンネル名`}
             size="small"

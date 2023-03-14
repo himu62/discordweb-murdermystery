@@ -1,7 +1,9 @@
 import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import { FC } from "react";
-import { Box, Button, Icon, TextField } from "@mui/material";
+import { Box, Button, Divider, Icon, TextField } from "@mui/material";
+import OperationEditor from "@/src/components/ScenarioDetail/OperationEditor";
+import { v4 } from "uuid";
 
 type Props = {
   control: Control<Scenario>;
@@ -13,7 +15,7 @@ const SceneEditor: FC<Props> = ({ control, register, onSave }) => {
   const { fields, append, remove } = useFieldArray({ control, name: "scenes" });
 
   const onAppend = () => {
-    append({ name: "" });
+    append({ id: v4(), name: "", operations: [] });
     onSave();
   };
 
@@ -25,12 +27,12 @@ const SceneEditor: FC<Props> = ({ control, register, onSave }) => {
   return (
     <Box>
       {fields.map((s, index) => (
-        <Box key={index} sx={{ m: 1, p: 1, border: 1, borderRadius: 1 }}>
+        <Box key={s.id} sx={{ m: 1, p: 1, border: 1, borderRadius: 1 }}>
           <Box sx={{ display: "flex" }}>
             <TextField
               label="シーン名"
               size="small"
-              fullWidth
+              sx={{ flexGrow: 1, mr: 1 }}
               {...register(`scenes.${index}.name`)}
             />
             <Button
@@ -42,6 +44,14 @@ const SceneEditor: FC<Props> = ({ control, register, onSave }) => {
               削除
             </Button>
           </Box>
+          <Divider sx={{ my: 1 }} />
+
+          <OperationEditor
+            control={control}
+            register={register}
+            onSave={onSave}
+            sceneIndex={index}
+          />
         </Box>
       ))}
       <Box>

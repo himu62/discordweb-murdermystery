@@ -35,18 +35,37 @@ export interface Profile {
 export interface Scenario {
   id: string;
   name: string;
-  pcs: { name: string }[];
+  pcs: { id: string; name: string }[];
   pcRenamable: boolean;
   textChannels: {
+    id: string;
     name: string;
   }[];
   voiceChannels: {
+    id: string;
     name: string;
   }[];
   audienceRole: Map<string, string>; // profile.id, role.id
   scenes: {
+    id: string;
     name: string;
+    operations: Operation[];
   }[];
+}
+
+export interface Operation {
+  id: string;
+  type: "send" | "permission" | "playersToAudience";
+  sendOperation?: {
+    destination: string;
+    text: string;
+    filepath: string;
+  };
+  permissionOperation?: {
+    channel: string;
+    role: string;
+    permission: "invisible" | "read" | "write";
+  };
 }
 
 export interface Session {
@@ -78,6 +97,10 @@ export interface Session {
   >;
 }
 
+type ScenarioLike = Omit<Scenario, "audienceRole"> & {
+  audienceRole: { [key: string]: string };
+};
+
 const STORAGE_KEY = "discordweb-murdermystery/store";
 
 const saveStore = (store: Store) => {
@@ -92,12 +115,20 @@ const saveStore = (store: Store) => {
     masked.set(pr.id, pr);
   });
 
+  const scenerios: { [key: string]: ScenarioLike } = {};
+  store.scenarios.forEach((s) => {
+    scenerios[s.id] = {
+      ...s,
+      audienceRole: Object.fromEntries(s.audienceRole.entries()),
+    };
+  });
+
   const j = JSON.stringify({
     version: store.version,
     darkMode: store.darkMode,
     currentProfileId: store.currentProfileId,
     profiles: Object.fromEntries(masked),
-    scenarios: Object.fromEntries(store.scenarios),
+    scenarios: scenerios,
     sessions: Object.fromEntries(store.sessions),
   });
   localStorage.setItem(STORAGE_KEY, j);
@@ -125,12 +156,22 @@ const loadStore = () => {
     unmasked.set(pr.id, { ...pr, token: getCookie(`token/${pr.id}`) ?? "" });
   });
 
+  const mapScenarios = new Map<string, Scenario | ScenarioLike>(
+    Object.entries(scenarios)
+  );
+  mapScenarios.forEach((s) => {
+    mapScenarios.set(s.id, {
+      ...s,
+      audienceRole: new Map(Object.entries(s.audienceRole)),
+    });
+  });
+
   return {
     version,
     darkMode,
     currentProfileId,
     profiles: unmasked,
-    scenarios: new Map(Object.entries(scenarios)),
+    scenarios: mapScenarios,
     sessions: new Map(Object.entries(sessions)),
   } as Store;
 };
