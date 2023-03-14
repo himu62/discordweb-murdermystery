@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import PcEditor from "@/src/components/ScenarioDetail/PcEditor";
 import ChannelEditor from "@/src/components/ScenarioDetail/ChannelEditor";
+import SceneEditor from "@/src/components/ScenarioDetail/SceneEditor";
 
 type Props = {
   scenario: Scenario;
@@ -54,6 +55,12 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
           onSave={handleSubmit(onSave)}
         />
         <Divider sx={{ my: 1 }} />
+
+        <SceneEditor
+          control={control}
+          register={register}
+          onSave={handleSubmit(onSave)}
+        />
       </form>
     </Card>
   );
