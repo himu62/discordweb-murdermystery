@@ -10,17 +10,14 @@ const ScenarioDetailContainer: FC = () => {
   const { store, setStore } = useStore();
   const { enqueueSnackbar } = useSnackbar();
   const [scenario, setScenario] = useState<Scenario>();
-  const [timer, setTimer] = useState<NodeJS.Timeout>();
 
   const onSave = (data: Scenario) => {
-    clearTimeout(timer);
-    const t = setTimeout(() => {
-      setScenario(data);
-      store.scenarios.set(data.id, data);
-      setStore(store);
-      enqueueSnackbar("シナリオを保存しました。", { autoHideDuration: 1000 });
-    }, 2000);
-    setTimer(t);
+    setScenario(data);
+    store.scenarios.set(data.id, data);
+    setStore(store);
+    enqueueSnackbar("シナリオを保存しました。", {
+      preventDuplicate: true,
+    });
   };
 
   useEffect(() => {

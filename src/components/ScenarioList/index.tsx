@@ -41,7 +41,7 @@ const ScenarioList: FC = () => {
       setScenarios(
         Array.from(store.scenarios.values()).filter((s) => {
           return (
-            s.name.includes(filterName) && filterCounts.includes(s.playersCount)
+            s.name.includes(filterName) && filterCounts.includes(s.pcs.length)
           );
         })
       );
@@ -58,7 +58,7 @@ const ScenarioList: FC = () => {
     if (filterCounts.length > 0) {
       setScenarios(
         Array.from(store.scenarios.values()).filter((s) => {
-          return filterCounts.includes(s.playersCount);
+          return filterCounts.includes(s.pcs.length);
         })
       );
     }
@@ -68,7 +68,11 @@ const ScenarioList: FC = () => {
     const n: Scenario = {
       id: v4(),
       name: data.name,
-      playersCount: Number(data.playersCount),
+      pcs: [],
+      pcRenamable: false,
+      textChannels: [],
+      voiceChannels: [],
+      audienceRole: new Map(),
     };
     store.scenarios.set(n.id, n);
     setStore(store);
@@ -144,7 +148,7 @@ const ScenarioList: FC = () => {
           >
             {Array.from(
               new Set(
-                Array.from(store.scenarios.values()).map((s) => s.playersCount)
+                Array.from(store.scenarios.values()).map((s) => s.pcs.length)
               )
             )
               .sort((a, b) => a - b)
@@ -165,7 +169,7 @@ const ScenarioList: FC = () => {
               key={s.id}
               id={s.id}
               name={s.name}
-              playersCount={s.playersCount}
+              playersCount={s.pcs.length}
               onDelete={handleDelete}
             />
           );

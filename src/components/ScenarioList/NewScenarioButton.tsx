@@ -48,17 +48,6 @@ const NewScenarioButton: FC<Props> = ({ onCreate }) => {
                 margin="dense"
                 inputProps={{ required: true, ...register("name") }}
               />
-              <TextField
-                name="playersCount"
-                label="人数"
-                required
-                type="number"
-                margin="dense"
-                inputProps={{
-                  required: true,
-                  ...register("playersCount"),
-                }}
-              />
             </CardContent>
             <CardActions sx={{ justifyContent: "flex-end" }}>
               <Button type="button" onClick={toggleModal} color="info">

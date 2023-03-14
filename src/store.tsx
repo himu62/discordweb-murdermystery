@@ -35,7 +35,15 @@ export interface Profile {
 export interface Scenario {
   id: string;
   name: string;
-  playersCount: number;
+  pcs: { name: string }[];
+  pcRenamable: boolean;
+  textChannels: {
+    name: string;
+  }[];
+  voiceChannels: {
+    name: string;
+  }[];
+  audienceRole: Map<string, string>; // profile.id, role.id
 }
 
 export interface Session {
