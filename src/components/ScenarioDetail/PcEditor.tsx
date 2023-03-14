@@ -36,9 +36,9 @@ const PcEditor: FC<Props> = ({ control, register, setRenamable, onSave }) => {
   };
 
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box>
       {fields.map((pc, index) => (
-        <Box key={index} sx={{ mb: 2, display: "flex" }}>
+        <Box key={index} sx={{ mt: 2, display: "flex" }}>
           <TextField
             label="キャラクター名"
             size="small"
@@ -54,28 +54,30 @@ const PcEditor: FC<Props> = ({ control, register, setRenamable, onSave }) => {
           </Button>
         </Box>
       ))}
-      <Button startIcon={<Icon>add</Icon>} onClick={onAppend}>
-        PC追加
-      </Button>
-      <Controller
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <FormControlLabel
-            control={
-              <Switch
-                checked={value}
-                onChange={(e, v) => {
-                  setRenamable(v);
-                  return onChange(v);
-                }}
-              />
-            }
-            label="キャラ名変更可能"
-            labelPlacement="start"
-          />
-        )}
-        name="pcRenamable"
-      />
+      <Box sx={{ mt: 1 }}>
+        <Button startIcon={<Icon>add</Icon>} onClick={onAppend}>
+          PC追加
+        </Button>
+        <Controller
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={value}
+                  onChange={(e, v) => {
+                    setRenamable(v);
+                    return onChange(v);
+                  }}
+                />
+              }
+              label="キャラ名変更可能"
+              labelPlacement="start"
+            />
+          )}
+          name="pcRenamable"
+        />
+      </Box>
     </Box>
   );
 };

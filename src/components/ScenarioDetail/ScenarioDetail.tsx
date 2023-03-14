@@ -39,7 +39,21 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
         />
         <Divider sx={{ my: 1 }} />
 
-        <ChannelEditor control={control} />
+        <ChannelEditor
+          type="text"
+          control={control}
+          register={register}
+          onSave={handleSubmit(onSave)}
+        />
+        <Divider sx={{ my: 1 }} />
+
+        <ChannelEditor
+          type="voice"
+          control={control}
+          register={register}
+          onSave={handleSubmit(onSave)}
+        />
+        <Divider sx={{ my: 1 }} />
       </form>
     </Card>
   );
