@@ -22,7 +22,12 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
   return (
     <Card sx={{ my: 1, p: 1 }}>
       <form onSubmit={handleSubmit(onSave)} onBlur={handleSubmit(onSave)}>
-        <TextField label="シナリオ名" fullWidth {...register("name")} />
+        <TextField
+          label="シナリオ名"
+          fullWidth
+          sx={{ mt: 1 }}
+          {...register("name")}
+        />
         <Divider sx={{ my: 2 }} />
 
         <PcEditor
