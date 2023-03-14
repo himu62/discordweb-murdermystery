@@ -16,6 +16,9 @@ const ScenarioItem: FC<Props> = ({ id, name, playersCount, onDelete }) => {
         <Typography color="text.secondary">{playersCount}人</Typography>
       </Box>
       <Box sx={{ alignSelf: "end" }}>
+        <Button size="small" startIcon={<Icon>post_add</Icon>}>
+          セッション作成
+        </Button>
         <Button
           size="small"
           startIcon={<Icon>edit</Icon>}
