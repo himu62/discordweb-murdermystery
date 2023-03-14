@@ -3,6 +3,7 @@ import { Card, Divider, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import PcEditor from "@/src/components/ScenarioDetail/PcEditor";
+import ChannelEditor from "@/src/components/ScenarioDetail/ChannelEditor";
 
 type Props = {
   scenario: Scenario;
@@ -28,7 +29,7 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
           sx={{ mt: 1 }}
           {...register("name")}
         />
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 1 }} />
 
         <PcEditor
           control={control}
@@ -36,6 +37,9 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
           setRenamable={onChangePcRenamable}
           onSave={handleSubmit(onSave)}
         />
+        <Divider sx={{ my: 1 }} />
+
+        <ChannelEditor control={control} />
       </form>
     </Card>
   );

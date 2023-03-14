@@ -36,7 +36,7 @@ const PcEditor: FC<Props> = ({ control, register, setRenamable, onSave }) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ mt: 2 }}>
       {fields.map((pc, index) => (
         <Box key={index} sx={{ mb: 2, display: "flex" }}>
           <TextField
