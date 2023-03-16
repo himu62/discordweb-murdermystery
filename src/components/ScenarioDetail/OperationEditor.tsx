@@ -15,9 +15,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
 } from "@mui/material";
 import { v4 } from "uuid";
+import SendOperationEditor from "@/src/components/ScenarioDetail/SendOperationEditor";
 
 type Props = {
   control: Control<Scenario>;
@@ -96,51 +96,11 @@ const OperationEditor: FC<Props> = ({
           </Box>
 
           {operations[index]?.type === "send" && (
-            <Box sx={{ mx: 1, mt: 2, mb: 0 }}>
-              <FormControl size="small" fullWidth sx={{ mb: 2 }}>
-                <InputLabel
-                  htmlFor={`select-operation-send-${sceneIndex}-${index}`}
-                >
-                  送信先のチャンネル
-                </InputLabel>
-                <Select
-                  id={`select-operation-send-${sceneIndex}-${index}`}
-                  label="送信先のチャンネル"
-                  fullWidth
-                  value={""}
-                >
-                  {textChannels.map((c) => (
-                    <MenuItem key={c.id} value={c.id}>
-                      {c.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <TextField
-                label="送信するテキスト"
-                multiline
-                size="small"
-                fullWidth
-                minRows={2}
-                maxRows={10}
-                sx={{ mb: 2 }}
-              />
-
-              {/* セキュリティの観点からファイルのパスは取得できない。BlobデータをそのままLocalStorageに取り込むか？5MBまでなら、、 */}
-              {/* ファイル一覧のUI 削除もできるとよし */}
-              <Button component="label">
-                ファイルを追加する
-                <input
-                  type="file"
-                  hidden
-                  onChange={(e) => {
-                    console.log(e);
-                    console.log(e.target.value);
-                  }}
-                />
-              </Button>
-            </Box>
+            <SendOperationEditor
+              control={control}
+              sceneIndex={sceneIndex}
+              opsIndex={index}
+            />
           )}
 
           {operations[index]?.type === "permission" && <Box></Box>}
