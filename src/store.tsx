@@ -57,8 +57,12 @@ export interface Operation {
   id: string;
   type: "send" | "permission" | "playersToAudience";
   sendOperation?: {
-    destination: string;
+    destination: string[];
     text: string;
+    variables: {
+      id: string;
+      key: string;
+    }[];
     files: {
       id: string;
       name: string;
@@ -76,32 +80,24 @@ export interface Session {
   scenarioId: string;
   name: string;
   audience: boolean;
-  pcs: Map<string, string>;
-  roles: Map<
-    string,
-    {
-      id: string;
-      name: string;
-    }
-  >;
-  textChannels: Map<
-    string,
-    {
-      id: string;
-      name: string;
-    }
-  >;
-  voiceChannels: Map<
-    string,
-    {
-      id: string;
-      name: string;
-    }
-  >;
+  roles: Map<string, DiscordResource>;
+  textChannels: Map<string, DiscordResource>;
+  voiceChannels: Map<string, DiscordResource>;
 }
+
+type DiscordResource = {
+  discordId: string;
+  name: string;
+};
 
 type ScenarioLike = Omit<Scenario, "audienceRole"> & {
   audienceRole: { [key: string]: string };
+};
+
+type SessionLike = Omit<Session, "roles" | "textChannels" | "voiceChannels"> & {
+  roles: { [key: string]: DiscordResource };
+  textChannels: { [key: string]: DiscordResource };
+  voiceChannels: { [key: string]: DiscordResource };
 };
 
 const STORAGE_KEY = "discordweb-murdermystery/store";
@@ -126,13 +122,23 @@ const saveStore = (store: Store) => {
     };
   });
 
+  const sessions: { [key: string]: SessionLike } = {};
+  store.sessions.forEach((s) => {
+    sessions[s.id] = {
+      ...s,
+      roles: Object.fromEntries(s.roles.entries()),
+      textChannels: Object.fromEntries(s.textChannels.entries()),
+      voiceChannels: Object.fromEntries(s.voiceChannels.entries()),
+    };
+  });
+
   const j = JSON.stringify({
     version: store.version,
     darkMode: store.darkMode,
     currentProfileId: store.currentProfileId,
     profiles: Object.fromEntries(masked),
     scenarios: scenerios,
-    sessions: Object.fromEntries(store.sessions),
+    sessions: sessions,
   });
   localStorage.setItem(STORAGE_KEY, j);
 };
@@ -169,13 +175,25 @@ const loadStore = () => {
     });
   });
 
+  const mapSessions = new Map<string, Session | SessionLike>(
+    Object.entries(sessions)
+  );
+  mapSessions.forEach((s) => {
+    mapSessions.set(s.id, {
+      ...s,
+      roles: new Map(Object.entries(s.roles)),
+      textChannels: new Map(Object.entries(s.textChannels)),
+      voiceChannels: new Map(Object.entries(s.voiceChannels)),
+    });
+  });
+
   return {
     version,
     darkMode,
     currentProfileId,
     profiles: unmasked,
     scenarios: mapScenarios,
-    sessions: new Map(Object.entries(sessions)),
+    sessions: mapSessions,
   } as Store;
 };
 

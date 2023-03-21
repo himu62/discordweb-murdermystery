@@ -30,6 +30,7 @@ const SceneEditor: FC<Props> = ({ control, onSave }) => {
           <Box sx={{ display: "flex" }}>
             <TextField
               label="シーン名"
+              margin="dense"
               size="small"
               sx={{ flexGrow: 1, mr: 1 }}
               {...control.register(`scenes.${index}.name`)}

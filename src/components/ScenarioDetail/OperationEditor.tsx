@@ -44,7 +44,7 @@ const OperationEditor: FC<Props> = ({ control, onSave, sceneIndex }) => {
   return (
     <Box>
       {fields.map((o, index) => (
-        <Box key={o.id} sx={{ m: 1, p: 2, border: 1, borderRadius: 1 }}>
+        <Box key={o.id} sx={{ m: 1, p: 1, pt: 2, border: 1, borderRadius: 1 }}>
           <Box sx={{ display: "flex" }}>
             <FormControl size="small" sx={{ flexGrow: 1, mr: 1 }}>
               <InputLabel htmlFor={`select-operation-${sceneIndex}-${index}`}>
