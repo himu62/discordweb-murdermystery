@@ -1,10 +1,4 @@
-import {
-  Control,
-  Controller,
-  useFieldArray,
-  UseFormRegister,
-  useWatch,
-} from "react-hook-form";
+import { Control, Controller, useFieldArray, useWatch } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import { FC } from "react";
 import {
@@ -21,17 +15,11 @@ import SendOperationEditor from "@/src/components/ScenarioDetail/SendOperationEd
 
 type Props = {
   control: Control<Scenario>;
-  register: UseFormRegister<Scenario>;
   onSave: () => void;
   sceneIndex: number;
 };
 
-const OperationEditor: FC<Props> = ({
-  control,
-  register,
-  onSave,
-  sceneIndex,
-}) => {
+const OperationEditor: FC<Props> = ({ control, onSave, sceneIndex }) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: `scenes.${sceneIndex}.operations`,

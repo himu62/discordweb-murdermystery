@@ -4,16 +4,18 @@ import { Box, Button, Card, Icon, Typography } from "@mui/material";
 type Props = {
   id: string;
   name: string;
-  playersCount: number;
+  playersCount: { min: number; max: number };
   onDelete: (id: string) => void;
 };
 
 const ScenarioItem: FC<Props> = ({ id, name, playersCount, onDelete }) => {
+  const pc = playersCount.min === playersCount.max ? playersCount.min : `${playersCount.min}～${playersCount.max}`;
+
   return (
     <Card sx={{ m: 1, p: 1, display: "flex" }}>
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="h5">{name}</Typography>
-        <Typography color="text.secondary">{playersCount}人</Typography>
+        <Typography color="text.secondary">{pc}人</Typography>
       </Box>
       <Box sx={{ alignSelf: "end" }}>
         <Button size="small" startIcon={<Icon>post_add</Icon>}>

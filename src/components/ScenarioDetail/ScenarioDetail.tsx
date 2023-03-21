@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { Card, Divider, TextField } from "@mui/material";
+import { Box, Card, Divider, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Scenario } from "@/src/store";
-import PcEditor from "@/src/components/ScenarioDetail/PcEditor";
+import RoleEditor from "@/src/components/ScenarioDetail/RoleEditor";
 import ChannelEditor from "@/src/components/ScenarioDetail/ChannelEditor";
 import SceneEditor from "@/src/components/ScenarioDetail/SceneEditor";
 
@@ -12,14 +12,9 @@ type Props = {
 };
 
 const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
-  const { control, register, handleSubmit, setValue } = useForm<Scenario>({
+  const { control, register, handleSubmit } = useForm<Scenario>({
     defaultValues: scenario,
   });
-
-  const onChangePcRenamable = (value: boolean) => {
-    setValue("pcRenamable", value);
-    handleSubmit(onSave)();
-  };
 
   return (
     <Card sx={{ my: 1, p: 1 }}>
@@ -32,18 +27,29 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
         />
         <Divider sx={{ my: 1 }} />
 
-        <PcEditor
-          control={control}
-          register={register}
-          setRenamable={onChangePcRenamable}
-          onSave={handleSubmit(onSave)}
-        />
+        <Box>
+          <Typography>プレイヤー人数</Typography>
+          <TextField
+            label="最少"
+            margin="dense"
+            size="small"
+            {...register("playersCount.min")}
+          />
+          <TextField
+            label="最大"
+            margin="dense"
+            size="small"
+            {...register("playersCount.max")}
+          />
+        </Box>
+        <Divider sx={{ my: 1 }} />
+
+        <RoleEditor control={control} onSave={handleSubmit(onSave)} />
         <Divider sx={{ my: 1 }} />
 
         <ChannelEditor
           type="text"
           control={control}
-          register={register}
           onSave={handleSubmit(onSave)}
         />
         <Divider sx={{ my: 1 }} />
@@ -51,16 +57,11 @@ const ScenarioDetail: FC<Props> = ({ scenario, onSave }) => {
         <ChannelEditor
           type="voice"
           control={control}
-          register={register}
           onSave={handleSubmit(onSave)}
         />
         <Divider sx={{ my: 1 }} />
 
-        <SceneEditor
-          control={control}
-          register={register}
-          onSave={handleSubmit(onSave)}
-        />
+        <SceneEditor control={control} onSave={handleSubmit(onSave)} />
       </form>
     </Card>
   );

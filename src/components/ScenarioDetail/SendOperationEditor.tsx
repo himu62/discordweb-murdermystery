@@ -1,15 +1,18 @@
 import { FC } from "react";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { Control, Controller, useFieldArray, useWatch } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import {
   Box,
   Button,
   FormControl,
+  Icon,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
+import { saveFile } from "@/src/file";
+import { v4 } from "uuid";
 
 type Props = {
   control: Control<Scenario>;
@@ -19,6 +22,14 @@ type Props = {
 
 const SendOperationEditor: FC<Props> = ({ control, sceneIndex, opsIndex }) => {
   const textChannels = useWatch({ control, name: "textChannels" });
+  const {
+    fields: files,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: `scenes.${sceneIndex}.operations.${opsIndex}.sendOperation.files`,
+  });
 
   return (
     <Box sx={{ mx: 1, mt: 2, mb: 0 }}>
@@ -61,15 +72,41 @@ const SendOperationEditor: FC<Props> = ({ control, sceneIndex, opsIndex }) => {
       />
 
       {/* セキュリティの観点からファイルのパスは取得できない。BlobデータをそのままLocalStorageに取り込むか？5MBまでなら、、 */}
-      {/* ファイル一覧のUI 削除もできるとよし */}
-      <Button component="label">
+      {files?.map((f, i) => (
+        <Box key={f.id}>
+          id: {f.id}
+          <br />
+          name: {f.name}
+          <br />
+          <Button
+            size="small"
+            startIcon={<Icon>delete</Icon>}
+            color="error"
+            onClick={() => remove(i)}
+          >
+            削除
+          </Button>
+        </Box>
+      ))}
+      <Button
+        component="label"
+        size="small"
+        startIcon={<Icon>attach_file</Icon>}
+      >
         ファイルを追加する
         <input
           type="file"
           hidden
           onChange={(e) => {
-            console.log(e);
-            console.log(e.target.value);
+            if (e.target.files) {
+              saveFile("hogepiyo", e.target.files[0]);
+              append({
+                id: v4(),
+                name: `${e.target.files[0].name} size:${
+                  e.target.files[0].size / 1024
+                }KB`,
+              });
+            }
           }}
         />
       </Button>

@@ -5,7 +5,7 @@ import TextField from "@/src/atom/TextField";
 
 export type Inputs = {
   name: string;
-  playersCount: string;
+  playersCount: { min: number; max: number };
 };
 
 type Props = {
@@ -22,6 +22,7 @@ const NewScenarioButton: FC<Props> = ({ onCreate }) => {
   };
 
   const onSubmit = (data: Inputs) => {
+    data.playersCount = { min: 0, max: 0 };
     onCreate(data);
     setOpen(false);
   };

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
+import { Control, Controller, useFieldArray } from "react-hook-form";
 import { Scenario } from "@/src/store";
 import { Box, Button, Icon, TextField } from "@mui/material";
 import { v4 } from "uuid";
@@ -7,11 +7,10 @@ import { v4 } from "uuid";
 type Props = {
   type: "text" | "voice";
   control: Control<Scenario>;
-  register: UseFormRegister<Scenario>;
   onSave: () => void;
 };
 
-const ChannelEditor: FC<Props> = ({ type, control, register, onSave }) => {
+const ChannelEditor: FC<Props> = ({ type, control, onSave }) => {
   const name = type === "text" ? "textChannels" : "voiceChannels";
   const word = type === "text" ? "テキスト" : "ボイス";
 
@@ -33,13 +32,26 @@ const ChannelEditor: FC<Props> = ({ type, control, register, onSave }) => {
   return (
     <Box>
       {fields.map((c, index) => (
-        <Box key={c.id} sx={{ mt: 2, display: "flex" }}>
-          <TextField
-            label={`${word}チャンネル名`}
-            size="small"
-            sx={{ flexGrow: 1, mr: 1 }}
-            {...register(`${name}.${index}.name`)}
+        <Box key={c.id} sx={{ display: "flex" }}>
+          <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value, ref } }) => (
+              <TextField
+                label={`${word}チャンネル名`}
+                margin="dense"
+                size="small"
+                sx={{ flexGrow: 1, mr: 1 }}
+                onChange={(e) => {
+                  onChange(e.target.value.toLowerCase()); // Discordのチャンネル名には大文字が使えない
+                }}
+                onBlur={onBlur}
+                value={value}
+                inputRef={ref}
+              />
+            )}
+            name={`${name}.${index}.name`}
           />
+
           <Button
             startIcon={<Icon>delete</Icon>}
             onClick={onRemove(index)}

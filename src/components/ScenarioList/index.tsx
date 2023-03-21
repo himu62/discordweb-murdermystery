@@ -19,6 +19,20 @@ import { v4 } from "uuid";
 import ScenarioItem from "@/src/components/ScenarioList/ScenarioItem";
 import { useSnackbar } from "notistack";
 
+const _filterName = (input: string, searchable: string): boolean => {
+  return searchable.toUpperCase().includes(input.toUpperCase());
+};
+
+const _filterCount = (
+  inputs: number[],
+  between: { min: number; max: number }
+): boolean => {
+  for (const i of inputs) {
+    if (i >= between.min && i <= between.max) return true;
+  }
+  return false;
+};
+
 const ScenarioList: FC = () => {
   const { store, setStore } = useStore();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -32,35 +46,29 @@ const ScenarioList: FC = () => {
   }, [store.scenarios]);
 
   useEffect(() => {
+    const _scenarios = Array.from(store.scenarios.values());
+
     if (filterName === "" && filterCounts.length === 0) {
-      setScenarios(Array.from(store.scenarios.values()));
+      setScenarios(_scenarios);
       return;
     }
 
     if (filterName !== "" && filterCounts.length > 0) {
+      const filtered = _scenarios.filter((s) =>
+        _filterName(filterName, s.name)
+      );
       setScenarios(
-        Array.from(store.scenarios.values()).filter((s) => {
-          return (
-            s.name.toUpperCase().includes(filterName.toUpperCase()) &&
-            filterCounts.includes(s.pcs.length)
-          );
-        })
+        filtered.filter((s) => _filterCount(filterCounts, s.playersCount))
       );
     }
 
     if (filterName !== "") {
-      setScenarios(
-        Array.from(store.scenarios.values()).filter((s) => {
-          return s.name.toUpperCase().includes(filterName.toUpperCase());
-        })
-      );
+      setScenarios(_scenarios.filter((s) => _filterName(filterName, s.name)));
     }
 
     if (filterCounts.length > 0) {
       setScenarios(
-        Array.from(store.scenarios.values()).filter((s) => {
-          return filterCounts.includes(s.pcs.length);
-        })
+        _scenarios.filter((s) => _filterCount(filterCounts, s.playersCount))
       );
     }
   }, [filterName, filterCounts, store.scenarios]);
@@ -69,11 +77,11 @@ const ScenarioList: FC = () => {
     const n: Scenario = {
       id: v4(),
       name: data.name,
-      pcs: [],
-      pcRenamable: false,
+      playersCount: { min: 0, max: 0 },
+      roles: [],
+      audienceRole: new Map(),
       textChannels: [],
       voiceChannels: [],
-      audienceRole: new Map(),
       scenes: [],
     };
     store.scenarios.set(n.id, n);
@@ -156,11 +164,7 @@ const ScenarioList: FC = () => {
             sx={{ minWidth: "8em" }}
             onChange={handleCountsChanged}
           >
-            {Array.from(
-              new Set(
-                Array.from(store.scenarios.values()).map((s) => s.pcs.length)
-              )
-            )
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
               .sort((a, b) => a - b)
               .map((c) => {
                 return (
@@ -179,7 +183,7 @@ const ScenarioList: FC = () => {
               key={s.id}
               id={s.id}
               name={s.name}
-              playersCount={s.pcs.length}
+              playersCount={s.playersCount}
               onDelete={handleDelete}
             />
           );

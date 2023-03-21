@@ -35,8 +35,9 @@ export interface Profile {
 export interface Scenario {
   id: string;
   name: string;
-  pcs: { id: string; name: string }[];
-  pcRenamable: boolean;
+  playersCount: { min: number; max: number };
+  roles: { id: string; name: string }[];
+  audienceRole: Map<string, string>; // profile.id, role.id
   textChannels: {
     id: string;
     name: string;
@@ -45,7 +46,6 @@ export interface Scenario {
     id: string;
     name: string;
   }[];
-  audienceRole: Map<string, string>; // profile.id, role.id
   scenes: {
     id: string;
     name: string;
@@ -59,7 +59,10 @@ export interface Operation {
   sendOperation?: {
     destination: string;
     text: string;
-    fileKeys: string[];
+    files: {
+      id: string;
+      name: string;
+    }[];
   };
   permissionOperation?: {
     channel: string;
