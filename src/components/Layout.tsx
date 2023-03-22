@@ -2,6 +2,7 @@ import { ChangeEvent, FC, ReactNode, useEffect, useState } from "react";
 import {
   AppBar,
   Box,
+  createTheme,
   CssBaseline,
   Icon,
   IconButton,
@@ -9,7 +10,6 @@ import {
   ThemeProvider,
   Toolbar,
   Typography,
-  createTheme,
 } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { useStore } from "@/src/store";

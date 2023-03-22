@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { Box, Button, Card, Icon, Typography } from "@mui/material";
+import NewSessionButton from "@/src/components/ScenarioList/NewSessionButton";
 
 type Props = {
   id: string;
@@ -9,7 +10,10 @@ type Props = {
 };
 
 const ScenarioItem: FC<Props> = ({ id, name, playersCount, onDelete }) => {
-  const pc = playersCount.min === playersCount.max ? playersCount.min : `${playersCount.min}～${playersCount.max}`;
+  const pc =
+    playersCount.min === playersCount.max
+      ? playersCount.min
+      : `${playersCount.min}～${playersCount.max}`;
 
   return (
     <Card sx={{ m: 1, p: 1, display: "flex" }}>
@@ -18,9 +22,7 @@ const ScenarioItem: FC<Props> = ({ id, name, playersCount, onDelete }) => {
         <Typography color="text.secondary">{pc}人</Typography>
       </Box>
       <Box sx={{ alignSelf: "end" }}>
-        <Button size="small" startIcon={<Icon>post_add</Icon>}>
-          セッション作成
-        </Button>
+        <NewSessionButton scenarioId={id} />
         <Button
           size="small"
           startIcon={<Icon>edit</Icon>}

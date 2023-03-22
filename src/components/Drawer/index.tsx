@@ -2,16 +2,17 @@ import { FC, useState } from "react";
 import {
   Box,
   Divider,
+  Drawer as MuiDrawer,
   Icon,
   IconButton,
   Link,
   MenuItem,
   MenuList,
-  Drawer as MuiDrawer,
   Stack,
   Toolbar,
 } from "@mui/material";
 import ProfileSelector from "@/src/components/Drawer/ProfileSelector";
+import SessionLinks from "@/src/components/Drawer/SessionLinks";
 
 const Drawer: FC<{ width: number }> = ({ width }) => {
   const [open, setOpen] = useState(false);
@@ -27,11 +28,9 @@ const Drawer: FC<{ width: number }> = ({ width }) => {
           <Icon>close</Icon>
         </IconButton>
       </Toolbar>
-
       <Divider />
 
       <ProfileSelector />
-
       <Divider />
 
       <MenuList>
@@ -39,8 +38,9 @@ const Drawer: FC<{ width: number }> = ({ width }) => {
           <MenuItem>シナリオ一覧</MenuItem>
         </Link>
       </MenuList>
-
       <Divider />
+
+      <SessionLinks />
     </Stack>
   );
 
