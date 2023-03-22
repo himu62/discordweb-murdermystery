@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import { getCookie, setCookie } from "typescript-cookie";
+import webcontainer from "@/src/webcontainers";
 
 const VERSION = "1";
 
@@ -224,6 +225,8 @@ export const StoreProvider: FC<{
 
   useEffect(() => {
     _setStore(loadStore());
+
+    console.log(webcontainer);
   }, []);
 
   return (
