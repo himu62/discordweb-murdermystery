@@ -14,7 +14,7 @@ class Singleton {
             p.output.pipeTo(
               new WritableStream<never>({
                 write(data) {
-                  console.log(data);
+                  console.info("webcontainer|", data);
                 },
               })
             );
