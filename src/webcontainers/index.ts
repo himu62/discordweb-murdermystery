@@ -7,22 +7,31 @@ let webcontainerInstance: WebContainer;
 class Singleton {
   constructor() {
     if (!instance) {
-      WebContainer.boot().then((wc) => {
-        webcontainerInstance = wc;
-        webcontainerInstance.mount(files).then(() => {
-          webcontainerInstance.spawn("node", ["index.js"]).then((p) => {
-            p.output.pipeTo(
-              new WritableStream<never>({
+
+        (async () => {
+            webcontainerInstance = await WebContainer.boot();
+            await webcontainerInstance.mount(files);
+
+            const installProcess = await webcontainerInstance.spawn("npm", ["ci"]);
+            installProcess.output.pipeTo(new WritableStream<never>({
                 write(data) {
-                  console.info("webcontainer|", data);
-                },
-              })
-            );
-          });
-        });
-      });
+                    console.info("webcontainer|npm ci|", data);
+                }
+            }))
+            await installProcess.exit;
+
+            const process = await webcontainerInstance.spawn("ts-node", ["index.ts"]);
+            process.output.pipeTo(new WritableStream<never>({
+                write(data) {
+                    console.info("webcontainer|ts-node index.ts|", data);
+                }
+            }));
+            await process.exit;
+        })();
+
+    
+      }
     }
-  }
 
   get webcontainerInstance() {
     return webcontainerInstance;

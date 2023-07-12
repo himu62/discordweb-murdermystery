@@ -1,20 +1,23 @@
 import * as fs from "node:fs";
 
-const sourcePath = "./dist/index.js";
 const destPath = "./dist/files.js";
-
-if (!fs.existsSync(sourcePath)) {
-  console.error(`not found ${sourcePath}`);
-}
-
-const data = fs.readFileSync(sourcePath);
 
 fs.writeFileSync(
   destPath,
   `const files = {
-  "index.js": {
+  "index.ts": {
     file: {
-      contents: \`${data.toString()}\`
+      contents: \`${fs.readFileSync("./src/index.ts").toString()}\`
+    }
+  },
+  "package.json": {
+    file: {
+      contents: \`${fs.readFileSync("./package.json").toString()}\`
+    }
+  },
+  "package-lock.json": {
+    file: {
+      contents: \`${fs.readFileSync("./package-lock.json").toString()}\`
     }
   }
 };
