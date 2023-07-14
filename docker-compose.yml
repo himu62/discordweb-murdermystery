@@ -1,18 +1,20 @@
-version: "3"
+version: '3'
 
 services:
-  dev:
-    image: "node:18"
+  db:
+    image: 'postgres:15-alpine'
     volumes:
-      - ".:/app"
-    working_dir: "/app"
-    command: [ "sleep", "infinity" ]
-
-  app:
-    image: "node:18"
+      - ./db/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: discordweb
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: discordweb
+      POSTGRES_INITDB_ARGS: '--locale=C --encoding=UTF-8'
+  
+  migrate:
+    image: 'flyway/flyway:9-alpine'
     volumes:
-      - ".:/app"
-    working_dir: "/app"
-    ports:
-      - "3000:3000"
-    command: [ "npm", "run", "dev" ]
+      - ./db/sql:/flyway/sql
+    command: '-url=jdbc:postgresql://db/discordweb -user=discordweb -password=password migrate'
+    links:
+      - db
