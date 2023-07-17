@@ -1,31 +1,36 @@
 import { useEffect, useState } from 'react'
-import "./wasm/wasm_exec.js";
-import "./wasm/wasmTypes.d.ts";
+import "./wasm_exec.js";
+
+// eslint-disable-next-line no-var
+declare var window: Window & WasmWindow;
 
 function App() {
-  const [num, setNum] = useState(0)
-  const [hoge, setHoge] = useState(0)
+  const [token, setToken] = useState("")
+  const [error, setError] = useState("")
 
   useEffect(() => {
     void (async () => {
       const go = new window.Go();
-      const r = await WebAssembly.instantiateStreaming(fetch("/add.wasm"), go.importObject);
+      const r = await WebAssembly.instantiateStreaming(fetch("/app.wasm"), go.importObject);
       go.run(r.instance);
     })();
   }, [])
 
-  const handleAdd = () => {
-    console.log("hoge");
-    const n = window.add(num);
-    setHoge(n);
+  const handleStart = () => {
+    const n = window.start(token);
+    console.log(n);
+    
+    if (n.error) {
+      setError(n.error);
+    }
   }
 
   return (
     <>
-      <input type="text" value={num} onChange={(e) => setNum(parseInt(e.target.value))} />
-      <button onClick={handleAdd}>add</button>
+      <input type="text" value={token} onChange={(e) => setToken(e.target.value)} />
+      <button onClick={handleStart}>start</button>
 
-      <span>{hoge}</span>
+      <div>{error}</div>
     </>
   )
 }

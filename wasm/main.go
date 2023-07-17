@@ -3,22 +3,17 @@ package main
 import (
 	"fmt"
 	"syscall/js"
+
+	"github.com/himu62/discordweb-murdermystery/wasm/function"
 )
 
-var hoge int
-
-func add(this js.Value, inputs []js.Value) any {
-	if len(inputs) != 1 {
-		return 0
-	}
-
-	fmt.Println("hello!")
-
-	hoge = hoge + inputs[0].Int()
-	return hoge
+func ping(this js.Value, inputs []js.Value) any {
+	fmt.Println("pong")
+	return nil
 }
 
 func main() {
-	js.Global().Set("add", js.FuncOf(add))
+	js.Global().Set("add", js.FuncOf(ping))
+	js.Global().Set("start", js.FuncOf(function.Start))
 	select {}
 }
