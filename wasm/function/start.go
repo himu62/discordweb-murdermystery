@@ -28,6 +28,10 @@ func Start(this js.Value, inputs []js.Value) any {
 	}
 	session = d
 
+	session.Client
+	session.Identify.Properties.OS = "linux"
+	session.Identify.Properties.Browser = "disco"
+	session.Identify.Properties.Device = "disco"
 	session.Identify.Intents = discordgo.IntentGuilds | discordgo.IntentGuildPresences | discordgo.IntentGuildVoiceStates
 
 	c := make(chan map[string]any, 1)
