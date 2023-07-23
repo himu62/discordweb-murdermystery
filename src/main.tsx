@@ -3,11 +3,16 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App.tsx";
 import ScenarioListPage from "./page/ScenarioList/index.tsx";
+import DiscordRedirectPage from "./page/DiscordRedirect/index.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <div></div>,
+  },
+  {
+    path: "/discord_redirect",
+    element: <DiscordRedirectPage />,
   },
   {
     path: "/scenarios",

@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import AddBot from "../discord/AddBot";
+import DiscordLogin from "../discord/Login";
 
 const Drawer: FC<{ width: number; open: boolean; toggleOpen: () => void }> = ({
   width,
@@ -27,6 +28,7 @@ const Drawer: FC<{ width: number; open: boolean; toggleOpen: () => void }> = ({
       </Toolbar>
       <Divider />
 
+      <DiscordLogin />
       <AddBot />
       <Divider />
 
