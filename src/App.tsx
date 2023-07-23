@@ -1,38 +1,140 @@
-import { useEffect, useState } from 'react'
-import "./wasm_exec.js";
+import {
+  AppBar,
+  Box,
+  CssBaseline,
+  FormControlLabel,
+  Icon,
+  IconButton,
+  Switch,
+  Theme,
+  ThemeProvider,
+  Toolbar,
+  createTheme,
+  styled,
+} from "@mui/material";
+import { ChangeEvent, FC, ReactNode, useState } from "react";
+import Drawer from "./Drawer";
 
-// eslint-disable-next-line no-var
-declare var window: Window & WasmWindow;
+const MaterialUISwitch = styled(Switch)(({ theme }) => ({
+  width: 62,
+  height: 34,
+  padding: 7,
+  "& .MuiSwitch-switchBase": {
+    margin: 1,
+    padding: 0,
+    transform: "translateX(6px)",
+    "&.Mui-checked": {
+      color: "#fff",
+      transform: "translateX(22px)",
+      "& .MuiSwitch-thumb:before": {
+        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
+          "#fff"
+        )}" d="M4.2 2.5l-.7 1.8-1.8.7 1.8.7.7 1.8.6-1.8L6.7 5l-1.9-.7-.6-1.8zm15 8.3a6.7 6.7 0 11-6.6-6.6 5.8 5.8 0 006.6 6.6z"/></svg>')`,
+      },
+      "& + .MuiSwitch-track": {
+        opacity: 1,
+        backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
+      },
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    backgroundColor: theme.palette.mode === "dark" ? "#003892" : "#001e3c",
+    width: 32,
+    height: 32,
+    "&:before": {
+      content: "''",
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      left: 0,
+      top: 0,
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
+        "#fff"
+      )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528zM1.665 9.305v1.39h2.083v-1.39H1.666zm14.583 0v1.39h2.084v-1.39h-2.084zM5.09 13.928L3.616 15.4l.982.982 1.473-1.473-.982-.982zm9.82 0l-.982.982 1.473 1.473.982-.982-1.473-1.473zM9.305 16.25v2.083h1.389V16.25h-1.39z"/></svg>')`,
+    },
+  },
+  "& .MuiSwitch-track": {
+    opacity: 1,
+    backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
+    borderRadius: 20 / 2,
+  },
+}));
 
-function App() {
-  const [token, setToken] = useState("")
-  const [error, setError] = useState("")
+const DRAWER_WIDTH = 240;
 
-  useEffect(() => {
-    void (async () => {
-      const go = new window.Go();
-      const r = await WebAssembly.instantiateStreaming(fetch("/app.wasm"), go.importObject);
-      go.run(r.instance);
-    })();
-  }, [])
+const App: FC<{ children: ReactNode | ReactNode[] }> = ({ children }) => {
+  const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [theme, setTheme] = useState<Theme>(
+    createTheme({ palette: { mode: "dark" } })
+  );
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleStart = () => {
-    const n = window.start(token);
-    console.log(n);
-    
-    if (n.error) {
-      setError(n.error);
-    }
-  }
+  const toggleDarkMode = (e: ChangeEvent<HTMLInputElement>) => {
+    setDarkMode(e.target.checked);
+    setTheme(
+      createTheme({ palette: { mode: e.target.checked ? "dark" : "light" } })
+    );
+  };
+
+  const toggleDrawerOpen = () => setDrawerOpen(!drawerOpen);
 
   return (
-    <>
-      <input type="text" value={token} onChange={(e) => setToken(e.target.value)} />
-      <button onClick={handleStart}>start</button>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ display: "flex" }}>
+        <AppBar
+          position="fixed"
+          sx={{
+            width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+            ml: { sm: `${DRAWER_WIDTH}px` },
+          }}
+        >
+          <Toolbar variant="dense">
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ display: { sm: "none" } }}
+              onClick={toggleDrawerOpen}
+            >
+              <Icon>menu</Icon>
+            </IconButton>
 
-      <div>{error}</div>
-    </>
-  )
-}
+            <Box sx={{ flexGrow: 1 }} />
 
-export default App
+            <FormControlLabel
+              control={
+                <MaterialUISwitch
+                  checked={darkMode}
+                  onChange={toggleDarkMode}
+                />
+              }
+              label=""
+              sx={{ mr: -2 }}
+            />
+          </Toolbar>
+        </AppBar>
+
+        <Drawer
+          width={DRAWER_WIDTH}
+          open={drawerOpen}
+          toggleOpen={toggleDrawerOpen}
+        />
+
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            mt: 7,
+            width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+          }}
+        >
+          {children}
+        </Box>
+      </Box>
+    </ThemeProvider>
+  );
+};
+export default App;
